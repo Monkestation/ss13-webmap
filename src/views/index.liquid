@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Monkestation Webmap</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+
+  <!-- Metadata -->
+  <meta name="description" content="SS13 Web based map viewer built by AffectedArc07" />
+  <meta name="keywords" content="SS13, webmap, Space Station 13" />
+  <meta name="author" content="AffectedArc07,Flleeppyy" />
+
+  <!-- OpenGraph Metadata -->
+  <meta property="og:title" content="Monkestation Webmap" />
+  <meta property="og:description" content="SS13 Web based map viewer built by AffectedArc07 & Flleeppyy." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="{{ url }}" />
+  <meta property="og:image" content="/img/webmap-logo.jpg" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Monkestation Webmap">
+  <meta name="twitter:description" content="SS13 Web based map viewer built by AffectedArc07 & Flleeppyy.">
+  <meta name="twitter:image" content="/img/webmap-logo.jpg">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/main.min.css">
+  <link rel="stylesheet" href="/css/materialize.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js" defer></script>
+  <script src="/scripts/coords.min.js" defer></script>
+
+  {% comment %} <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115958323-1"></script> {% endcomment %}
+  {% comment %} <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> {% endcomment %}
+
+  <script type="text/javascript">
+    $(window).load(() => {
+      var d = Math.floor(Math.random() * 10);
+      if (d >= 7) {
+        console.debug("Loaded Normal TG.");
+      } else if (d < 3) {
+        $("#tgstuff").attr("src", "./img/pepperdab.gif");
+        console.debug("Something is nya~t right.\nDont blame LetterN.");
+      }
+      $(".loader").fadeOut("slow");
+      initFTL("E", "tg");
+    });
+  </script>
+</head>
+
+<body>
+  <div class="loader"></div>
+  <div id="layer1"></div>
+  <div id="layer2"></div>
+  <div id="layer3"></div>
+  <div class="container center">
+    <h1 class="white-text">{{ title | default: "Monkestation Webmap" }}</h1>
+    <p class="white-text"><b>Created by AffectedArc07 & Flleeppyy</b></p>
+    <p class="white-text">Special thanks to <b>Letter_N</b> (For HTML theming).</p>
+
+    <a class="btn ss13-blue" href="https://github.com/AffectedArc07/SS13WebMap">
+      <i class="fab fa-github"></i>&nbsp;&nbsp;GitHub
+    </a>
+    <a class="btn ss13-blue" href="https://www.patreon.com/affectedarc07">
+      <i class="fas fa-pound-sign"></i>&nbsp;&nbsp;Donate
+    </a>
+
+    <br><br>
+    <ul class="collapsible">
+      {% for category in categories %}
+      <li>
+        <div class="collapsible-header pepperthot-teal-text valign-wrapper">
+          <img src="{{ category.logo | url }}" id="tgstuff" class="logo" width="32" height="32" alt="Logo">
+          <i class="material-icons">arrow_drop_down</i>{{ category.name }}
+        </div>
+        <div class="collapsible-body white-text left-align">
+          {% for map in category.maps %}
+          <a class="btn ss13-blue" href="{{ map.url }}">{{ map.name }}</a>
+          {% endfor %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+  <script src="{{ '/js/Retrieve.min.js' | url }}"></script>
+</body>
+
+</html>
