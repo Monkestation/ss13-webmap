@@ -1,56 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <title>SS13 WebMap | {{ server_name }} | {{ map_name }}</title>
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <head>
+    <title>SS13 WebMap | {{ server_name }} | {{ map_name }}</title>
+    <link
+      rel="shortcut icon"
+      href="/favicon.ico"
+      type="image/x-icon">
 
-  <!-- Metadata -->
-  <meta name="description" content="SS13 Web based map viewer built by AffectedArc07" />
-  <meta name="keywords" content="SS13, webmap, Space Station 13, Monkestation, {{ map_name }}" />
-  <meta name="author" content="AffectedArc07" />
+      <!-- Metadata -->
+    <meta name="description" content="SS13 Web based map viewer built by AffectedArc07" />
+    <meta name="keywords" content="SS13, webmap, Space Station 13, Monkestation, {{ map_name }}" />
+    <meta name="author" content="AffectedArc07" />
 
-  <!-- OpenGraph Metadata -->
-  <meta property="og:title" content="SS13 WebMap | {{ server_name }} | {{ map_name }}" />
-  <meta property="og:description" content="SS13 Web based map viewer built by AffectedArc07." />
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content="{{ url }}/map/{{ server_name }}/{{ map_name }}" />
-  <meta property="og:image" content="{{ url }}/map/images/webmap-logo.jpg" />
+      <!-- OpenGraph Metadata -->
+    <meta property="og:title" content="SS13 WebMap | {{ server_name }} | {{ map_name }}" />
+    <meta property="og:description" content="SS13 Web based map viewer built by AffectedArc07." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="{{ url }}/map/{{ server_name }}/{{ map_name }}" />
+    <meta property="og:image" content="{{ url }}/map/images/webmap-logo.jpg" />
 
-  <!-- Twitter Card data -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="SS13 WebMap | {{ server_name }} | {{ map_name }}">
-  <meta name="twitter:description" content="SS13 Web based map viewer built by AffectedArc07.">
-  <meta name="twitter:image" content="{{ url }}/map/images/webmap-logo.jpg">
+      <!-- Twitter Card data -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="SS13 WebMap | {{ server_name }} | {{ map_name }}">
+    <meta name="twitter:description" content="SS13 Web based map viewer built by AffectedArc07.">
+    <meta name="twitter:image" content="{{ url }}/map/images/webmap-logo.jpg">
 
-  <!-- Import stylesheets -->
-  <link rel="stylesheet" href="/css/main.min.css">
-  <link rel="stylesheet" href="/css/materialize.min.css">
-  {% comment %} <link rel="stylesheet" href="/css/leaflet.min.css"> {% endcomment %}
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+      <!-- Import stylesheets -->
+    <link rel="stylesheet" href="/css/main.min.css">
+    <link rel="stylesheet" href="/css/materialize.min.css">
 
-  <!-- Import scripts -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="/js/coords.min.js"></script>
-  <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+    <!-- Import scripts -->
+    <script src="/js/coords.min.js"></script>
+    <script
+      src="https://code.jquery.com/jquery-2.2.4.min.js"
+      integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
 
-  <script type="text/javascript">
-    $(window).load(function () {
-      $(".loader").fadeOut("slow");
-      initFTL("E", "tg");
-    });
-  </script>
-</head>
+    {% render "snippets/loader.liquid" %}
+  </head>
 
 
-<body>
-  <div class="loader"></div>
-  <div id="layer1"></div>
-  <div id="layer2"></div>
-  <div id="layer3"></div>
-  <div class="container center">
-    <h1 class="white-text">{{ error }}</h1>
-  </div>
-</body>
+  <body>
+    <div class="loader"></div>
+    <div id="layer1"></div>
+    <div id="layer2"></div>
+    <div id="layer3"></div>
+    <div class="container center">
+      <h1 class="white-text">{{ errorCode }}</h1>
+      <hr>
+      <p class="white-text">{{ message }}</p>
+    </div>
+  </body>
 </html>

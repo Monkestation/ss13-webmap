@@ -7,8 +7,14 @@ export interface MapInfo {
   supportsPipes: boolean;
 }
 
+export interface MapSubCategory {
+  name: string;
+  maps: MapInfo[];
+}
+
 export interface MapCategory {
   name: string;
+  friendlyName: string;
   /** @description icon file name in the src/public/img/logos folder */
   logo: string;
   /** @description the path to the game/codebase */
@@ -16,6 +22,7 @@ export interface MapCategory {
   /** @description basePath for maps in this category, relative to the gamePath, for ease of use */
   mapFilesPath: string;
   maps: MapInfo[];
+  subcategories?: MapSubCategory[];
 }
 
 export interface MapConfig {

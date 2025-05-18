@@ -49,35 +49,57 @@ app.get("/", async (request, reply) => {
       logo: `/img/logos/${cat.logo}`,
       maps: cat.maps.map((map) => ({
         name: map.name,
+        friendlyName: map.friendlyName,
         url: `/maps/${cat.name}/${map.name}`,
+      })),
+      subcategories: cat.subcategories?.map((subcat) => ({
+        name: subcat.name,
+        maps: subcat.maps.map((map) => ({
+          name: map.name,
+          friendlyName: map.friendlyName,
+          url: `/maps/${cat.name}/${map.name}`,
+        })),
       })),
     })),
   });
 });
 
-// app get regex that matches /maps/:category/:map but not /maps/:category/:map.png
 app.get('/maps/:category/:map(^[^.]+$)', async (request, reply) => {
-// app.get("/maps/:category/:map", async (request, reply) => {
   const { category: rCategory, map: rMap } = request.params as { category: string; map: string };
 
   const categoryConfig = config.categories.find((cat) => cat.name === rCategory);
 
   if (!categoryConfig) {
     return reply.status(404).view("pages/error.liquid", {
-      error: `Category ${rCategory} not found`,
+      errorCode: 404,
+      message: `Category ${rCategory} not found`,
     });
   }
 
-  const mapConfig = categoryConfig.maps.find((map) => map.friendlyName === rMap || map.name === rMap);
+  let mapConfig = categoryConfig.maps.find((map) => map.friendlyName === rMap || map.name === rMap);
+
+  if (!mapConfig) {
+    // check subcategories
+    if (categoryConfig.subcategories) {
+      for (const subcat of categoryConfig.subcategories) {
+        mapConfig = subcat.maps.find((map) => map.friendlyName === rMap || map.name === rMap);
+        if (mapConfig) {
+          break;
+        }
+      }
+    }
+  }
+
   if (!mapConfig) {
     return reply.status(404).view("pages/error.liquid", {
-      error: `Map ${rMap} not found in category ${rCategory}`,
+      errorCode: 404,
+      message: `Map ${rMap} not found in category ${rCategory}`,
     });
   }
 
   let zLevels = 1;
 
-  const zLevelRegex = new RegExp(`${mapConfig.name}-(\\d+)`, "i");
+  const zLevelRegex = new RegExp(`^${mapConfig.name}-(\\d+)`, "i");
   const mapFiles = await fs.readdir(path.join(MAPS_PATH, categoryConfig.name));
   const mapFilesWithZLevels = mapFiles.filter((file) => zLevelRegex.test(file));
   zLevels = mapFilesWithZLevels.length;
@@ -89,12 +111,28 @@ app.get('/maps/:category/:map(^[^.]+$)', async (request, reply) => {
       name: mapConfig.name,
       friendlyName: mapConfig.friendlyName,
       zLevels,
-      supportsPipes: mapConfig.supportsPipes,
+      supportsPipes: mapConfig.supportsPipes ?? true,
     },
   });
 });
 
-app.listen({ port: 3000 }, (err, address) => {
+app.setNotFoundHandler((request, reply) => {
+  return reply.status(404).view("pages/error.liquid", {
+    errorCode: 404,
+    message: "Page not found",
+  });
+});
+
+app.setErrorHandler((error, request, reply) => {
+  logger.error(error);
+  return reply.status(500).view("pages/error.liquid", {
+    errorCode: 500,
+    message: "Internal server error",
+  });
+});
+const listenPort = Number.parseInt(process.env.PORT as string) || 3000;
+
+app.listen({ port: listenPort, host: "0.0.0.0" }, (err, address) => {
   if (err) throw err;
 });
 

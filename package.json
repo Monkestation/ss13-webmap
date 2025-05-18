@@ -8,8 +8,9 @@
     "build": "tsc",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "esbuild": "node scripts/esbuild.mjs",
-    "buildjsonschema": "cross-env  typescript-json-schema --esModuleInterop --ignoreErrors --excludePrivate tsconfig.json -o config.schema.json MapConfig",
-    "generatemaps": "cross-env TASK_LIMIT=5 node scripts/generateMaps.mjs"
+    "esbuild:watch": "node scripts/esbuild.mjs --watch",
+    "generateschema": "cross-env typescript-json-schema --esModuleInterop --ignoreErrors --excludePrivate tsconfig.json -o config.schema.json MapConfig",
+    "generatemaps": "cross-env node scripts/generateMaps.mjs"
   },
   "keywords": [],
   "author": "",

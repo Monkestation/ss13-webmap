@@ -1,0 +1,35 @@
+<script type="text/javascript">
+  $(window).load(() => {
+    {% if mainPage %}
+    var d = Math.floor(Math.random() * 10);
+    if (d >= 7) {
+      console.debug("Loaded Normal TG.");
+    } else if (d < 3) {
+      $("#tgstuff").attr("src", "./img/pepperdab.gif");
+      console.debug("Something is nya~t right.\nDont blame LetterN.");
+    }
+    {% endif %}
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.addEventListener('change', (e) => {
+      const layer1 = $("#layer1");
+      const layer2 = $("#layer2");
+      const layer3 = $("#layer3");
+      if (e.matches) {
+        $('.loader').remove();
+        layer1.css("animation-play-state", "paused");
+        layer2.css("animation-play-state", "paused");
+        layer3.css("animation-play-state", "paused");
+      } else {
+        layer1.css("animation-play-state", "running");
+        layer2.css("animation-play-state", "running");
+        layer3.css("animation-play-state", "running");
+      }
+    });
+    if (prefersReducedMotion.matches)
+      $('.loader').remove();
+    else
+      $(".loader").fadeOut("slow");
+
+    initFTL("E", "tg", undefined, prefersReducedMotion.matches);
+  });
+</script>

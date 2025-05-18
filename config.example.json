@@ -3,26 +3,78 @@
   "baseUrl": "https://maps.monkestation.com",
   "categories": [
     {
+      "friendlyName": "Monkestation - Stations",
       "name": "Monkestation",
       "logo": "monke.png",
       "gamePath": "/home/chen/development/monkestation2.0",
       "mapFilesPath": "_maps/map_files",
       "maps": [
+        { "name": "BoxStation", "dmmPath": "BoxStation/BoxStation.dmm" },
+        { "name": "MetaStation", "dmmPath": "MetaStation/MetaStation.dmm" },
+        { "name": "DeltaStation2", "dmmPath": "Deltastation/DeltaStation2.dmm", "friendlyName": "DeltaStation" },
+        { "name": "Blueshift", "dmmPath": "Blueshift/Blueshift.dmm" },
+        { "name": "Graveyard", "dmmPath": "Graveyard/Graveyard.dmm", "friendlyName": "Graveyard" },
+        { "name": "Heliostation", "dmmPath": "Heliostation/Heliostation.dmm", "friendlyName": "Heliostation" },
+        { "name": "IceBoxStation", "dmmPath": "IceBoxStation/IceBoxStation.dmm", "friendlyName": "IceBox Station" },
+        { "name": "KiloStation", "dmmPath": "KiloStation/KiloStation.dmm", "friendlyName": "Kilo Station" },
+        { "name": "LeadPoisoningStation", "dmmPath": "LeadPoisoningStation/LeadPoisoningStation.dmm", "friendlyName": "Lead Poisoning Station" },
+        { "name": "Ouroboros", "dmmPath": "Ouroboros/Ouroboros.dmm", "friendlyName": "Ouroboros" },
+        { "name": "PubbyStation", "dmmPath": "PubbyStation/PubbyStation.dmm", "friendlyName": "Pubby Station" },
+        { "name": "Theseus", "dmmPath": "Theseus/Theseus.dmm", "friendlyName": "Theseus" },
+        { "name": "tramstation", "dmmPath": "tramstation/tramstation.dmm", "friendlyName": "Tram Station" },
+        { "name": "VoidRaptor", "dmmPath": "Voidraptor/VoidRaptor.dmm", "friendlyName": "Voidraptor" }
+      ],
+      "subcategories": [
         {
-          "name": "BoxStation",
-          "dmmPath": "BoxStation/BoxStation.dmm",
-          "supportsPipes": true
+          "name": "Debug Maps",
+          "maps": [
+            { "name": "multiz", "dmmPath": "debug/multiz.dmm", "friendlyName": "Multiz" },
+            { "name": "runtimestation", "dmmPath": "debug/runtimestation.dmm", "friendlyName": "Runtimestation" },
+            { "name": "shiptest", "dmmPath": "debug/shiptest.dmm", "friendlyName": "Shiptest" }
+          ]
         },
         {
-          "name": "MetaStation",
-          "dmmPath": "MetaStation/MetaStation.dmm",
-          "supportsPipes": true
+          "name": "Other",
+          "maps": [
+            { "name": "Lavaland", "dmmPath": "Mining/Lavaland.dmm", "friendlyName": "Lavaland" },
+            { "name": "Oshan", "dmmPath": "Mining/Oshan.dmm", "friendlyName": "Oshan" },
+            { "name": "CentCom", "dmmPath": "generic/CentCom.dmm", "friendlyName": "CentCom" }
+          ]
         },
         {
-          "name": "DeltaStation2",
-          "friendlyName": "DeltaStation",
-          "dmmPath": "Deltastation/DeltaStation2.dmm",
-          "supportsPipes": true
+          "name": "CTF",
+          "maps": [
+            { "name": "classic", "dmmPath": "CTF/classic.dmm", "friendlyName": "Classic" },
+            { "name": "cruiser", "dmmPath": "CTF/cruiser.dmm", "friendlyName": "Cruiser" },
+            { "name": "downtown", "dmmPath": "CTF/downtown.dmm", "friendlyName": "Downtown" },
+            { "name": "fourSide", "dmmPath": "CTF/fourSide.dmm", "friendlyName": "Four Side" },
+            { "name": "limbo", "dmmPath": "CTF/limbo.dmm", "friendlyName": "Limbo" },
+            { "name": "turbine", "dmmPath": "CTF/turbine.dmm", "friendlyName": "Turbine" }
+          ]
+        },
+        {
+          "name": "Basketball",
+          "maps": [
+            { "name": "ash_gladiators", "dmmPath": "Basketball/ash_gladiators.dmm", "friendlyName": "Ash Gladiators" },
+            { "name": "ass_blast_usa", "dmmPath": "Basketball/ass_blast_usa.dmm", "friendlyName": "Ass Blast USA" },
+            { "name": "greytide_worldwide", "dmmPath": "Basketball/greytide_worldwide.dmm", "friendlyName": "Greytide Worldwide" },
+            { "name": "lusty_xenomorphs", "dmmPath": "Basketball/lusty_xenomorphs.dmm", "friendlyName": "Lusty Xenomorphs" },
+            { "name": "soviet_bear", "dmmPath": "Basketball/soviet_bear.dmm", "friendlyName": "Soviet Bear" },
+            { "name": "space_surfers", "dmmPath": "Basketball/space_surfers.dmm", "friendlyName": "Space Surfers" },
+            { "name": "stadium", "dmmPath": "Basketball/stadium.dmm", "friendlyName": "Stadium" }
+          ]
+        },
+        {
+        "name": "Mafia",
+          "maps": [
+            { "name": "mafia_ayylmao", "dmmPath": "Mafia/mafia_ayylmao.dmm", "friendlyName": "Ayylmao" },
+            { "name": "mafia_ball", "dmmPath": "Mafia/mafia_ball.dmm", "friendlyName": "Ball" },
+            { "name": "mafia_gothic", "dmmPath": "Mafia/mafia_gothic.dmm", "friendlyName": "Gothic" },
+            { "name": "mafia_lavaland", "dmmPath": "Mafia/mafia_lavaland.dmm", "friendlyName": "Lavaland" },
+            { "name": "mafia_snow", "dmmPath": "Mafia/mafia_snow.dmm", "friendlyName": "Snow" },
+            { "name": "mafia_spiderclan", "dmmPath": "Mafia/mafia_spiderclan.dmm", "friendlyName": "Spiderclan" },
+            { "name": "mafia_syndie", "dmmPath": "Mafia/mafia_syndie.dmm", "friendlyName": "Syndie" }
+          ]
         }
       ]
     }

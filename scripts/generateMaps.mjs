@@ -13,6 +13,7 @@ import fs from "node:fs/promises";
 
 const taskLimit = process.env.TASK_LIMIT || 2;
 
+console.info(`Generating maps with a task limit of ${taskLimit} (set via TASK_LIMIT env var)`);
 // const dmmTool = `"D:\\WEBSITE_RELATIONS\\map_renderer\\dmm-tools.exe"`;
 let dmmTool = process.env.DMM_TOOL || "dmm-tools";
 
@@ -79,34 +80,25 @@ const processMaps = async (webmapConfig) => {
     }
   }
 
-  // for (const [mapPath, maps] of Object.entries()) {
-  //   console.log(`Processing maps in: ${mapPath}`);
-  //   for (const map of maps) {
-  //     const command = `${dmmTool} minimap ${map}`;
-  //     tasks.push(() => execCommand(command, mapPath));
-  //   }
-
-  //   if (mapPath.includes("Monkestation")) {
-  //     for (const map of maps) {
-  //       const command = `${dmmTool} minimap --enable only-wires-and-pipes ${map} -o data/minimaps/pipes`;
-  //       tasks.push(() => execCommand(command, mapPath));
-  //     }
-  //   }
-  // }
-
   try {
     await runLimited(tasks, taskLimit);
   } catch (error) {
     console.error("Error during map processing:", error);
   }
-  // copy the minimaps from the gamePath/data/minimaps to the data/minimaps folder
-  // like copythe minimaps folder specifically, but make sure maps/ is structured like map/categoryname/ for each category
 
   console.log("Copying minimaps to data/minimaps folder...");
 
+  const copiedFolders = new Set();
   for (const category of webmapConfig.categories) {
     const minimapPath = path.join(category.gamePath, "data", "minimaps");
     const destPath = path.join(process.cwd(), "maps", category.name);
+    const categoryName = category.name;
+    if (copiedFolders.has(categoryName)) {
+      console.log(`Already copied minimaps for ${categoryName}, skipping...`);
+      continue;
+    }
+    copiedFolders.add(categoryName);
+    console.log(`Copying minimaps for ${categoryName}...`);
     await fs.mkdir(destPath, { recursive: true });
     await fs.cp(minimapPath, destPath, { recursive: true });
   }
@@ -126,9 +118,7 @@ const main = async () => {
     dmmToolPath += ".exe";
   }
 
-  // check if absolute path is provided
   if (!isAbsolute(dmmToolPath)) {
-    // just try running it real quick
     try {
       await execCommand(dmmToolPath, __dirname);
     } catch (error) {

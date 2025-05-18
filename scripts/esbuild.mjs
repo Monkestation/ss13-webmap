@@ -99,3 +99,17 @@ async function main() {
 }
 
 main();
+
+if (process.argv.includes("--watch")) {
+  console.log("Watching for changes...");
+  fsSync.watch(cssDir, { recursive: true }, (eventType, filename) => {
+    if (filename.endsWith(".scss") || (filename.endsWith(".css") && !filename.endsWith(".min.css"))) {
+      buildCSS();
+    }
+  });
+  fsSync.watch(jsDir, { recursive: true }, (eventType, filename) => {
+    if (filename.endsWith(".js") && !filename.endsWith(".min.js")) {
+      buildJS();
+    }
+  });
+}

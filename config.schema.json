@@ -3,6 +3,9 @@
     "definitions": {
         "MapCategory": {
             "properties": {
+                "friendlyName": {
+                    "type": "string"
+                },
                 "gamePath": {
                     "description": "the path to the game/codebase",
                     "type": "string"
@@ -23,6 +26,12 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "subcategories": {
+                    "items": {
+                        "$ref": "#/definitions/MapSubCategory"
+                    },
+                    "type": "array"
                 }
             },
             "type": "object"
@@ -44,6 +53,20 @@
                 },
                 "zLevels": {
                     "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "MapSubCategory": {
+            "properties": {
+                "maps": {
+                    "items": {
+                        "$ref": "#/definitions/MapInfo"
+                    },
+                    "type": "array"
+                },
+                "name": {
+                    "type": "string"
                 }
             },
             "type": "object"

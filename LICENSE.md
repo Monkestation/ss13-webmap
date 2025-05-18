@@ -1,6 +1,8 @@
 MIT License
 
-Copyright (c) 2019 AffectedArc07
+Original work Copyright (c) 2019 AffectedArc07
+
+Modified work Copyright (c) 2025 Flleeppyy (Chen Marisa)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

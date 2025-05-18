@@ -35,13 +35,13 @@ PARALLAX STUFF
 	z-index: -1;
 }
 
-.layer1 {background-image: url("/img/Parallax/layer1.png");}
-.layer2 {background-image: url("/img/Parallax/layer2.png");}
-.layer3 {background-image: url("/img/Parallax/layer3.png");}
+.layer1 {background: #00000000 url("/img/Parallax/layer1.png");}
+.layer2 {background: #00000000 url("/img/Parallax/layer2.png");}
+.layer3 {background: #00000000 url("/img/Parallax/layer3.png");}
 
-.TG_layer1 {background-image: url("/img/Parallax/layer1TG.png");}
-.TG_layer2 {background-image: url("/img/Parallax/layer2TG.png");}
-.TG_layer3 {background-image: url("/img/Parallax/layer3TG.png");}
+.TG_layer1 {background: #00000000 url("/img/Parallax/layer1TG.png");}
+.TG_layer2 {background: #00000000 url("/img/Parallax/layer2TG.png");}
+.TG_layer3 {background: #00000000 url("/img/Parallax/layer3TG.png");}
 
 .loader {
 	position: fixed;

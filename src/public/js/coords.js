@@ -100,7 +100,7 @@ function addMetadata(data, webmap){
  * @example
  * initFTL("N", "tg")
  */
-function initFTL(dir="E", mode="norm", speedmodif = 0){
+function initFTL(dir="E", mode="norm", speedmodif = 0, reducedMotion = false){
     console.debug("FTL Translation imminent")
     const layer1 = $("#layer1");
     const layer2 = $("#layer2");
@@ -121,6 +121,12 @@ function initFTL(dir="E", mode="norm", speedmodif = 0){
     layer1.animate({"animation-duration": speeds.l1+"s"}, 5000);
     layer2.animate({"animation-duration": speeds.l2+"s"}, 5000);
     layer3.animate({"animation-duration": speeds.l3+"s"}, 5000);
+
+    if (reducedMotion){
+      layer1.css("animation-play-state", "paused");
+      layer2.css("animation-play-state", "paused");
+      layer3.css("animation-play-state", "paused");
+    }
     console.debug("FTL Translation successful");
 }
 
