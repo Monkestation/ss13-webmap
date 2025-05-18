@@ -1,0 +1,30 @@
+{
+  "$schema": "config.schema.json",
+  "baseUrl": "https://maps.monkestation.com",
+  "categories": [
+    {
+      "name": "Monkestation",
+      "logo": "monke.png",
+      "gamePath": "/home/chen/development/monkestation2.0",
+      "mapFilesPath": "_maps/map_files",
+      "maps": [
+        {
+          "name": "BoxStation",
+          "dmmPath": "BoxStation/BoxStation.dmm",
+          "supportsPipes": true
+        },
+        {
+          "name": "MetaStation",
+          "dmmPath": "MetaStation/MetaStation.dmm",
+          "supportsPipes": true
+        },
+        {
+          "name": "DeltaStation2",
+          "friendlyName": "DeltaStation",
+          "dmmPath": "Deltastation/DeltaStation2.dmm",
+          "supportsPipes": true
+        }
+      ]
+    }
+  ]
+}

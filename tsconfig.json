@@ -17,7 +17,7 @@
     "isolatedModules": true,
     "lib": ["ES2023"],
     "module": "NodeNext",
-    // "moduleResolution": "Node",
+    "moduleResolution": "node16",
     "noEmit": false,
     "noEmitHelpers": true,
     "noEmitOnError": true,
@@ -30,13 +30,10 @@
     "outDir": "./dist",
     "pretty": true,
     "removeComments": true,
-    "resolvePackageJsonImports": true,
-    "resolvePackageJsonExports": true,
-    "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "sourceRoot": "./src",
-    "typeRoots": ["./src/typings"],
+    "typeRoots": ["./src/typings", "./node_modules/@types"],
     "strict": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": false,
@@ -45,10 +42,9 @@
     "suppressImplicitAnyIndexErrors": false,
     "target": "ES2020",
     "verbatimModuleSyntax": false,
-    "useDefineForClassFields": true
+    "useDefineForClassFields": true,
   },
   "exclude": [
-    "./config.example.ts",
     "./config.json"
-  ]
+  ],
 }

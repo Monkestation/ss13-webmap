@@ -33,10 +33,11 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
 
   <!-- Scripts -->
-  <script src="https://code.jquery.com/jquery-2.2.4.min.js" crossorigin="anonymous" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js" defer></script>
-  <script src="/scripts/coords.min.js" defer></script>
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+  <script src="/js/coords.min.js" defer></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   {% comment %} <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115958323-1"></script> {% endcomment %}
   {% comment %} <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> {% endcomment %}
@@ -78,7 +79,7 @@
       {% for category in categories %}
       <li>
         <div class="collapsible-header pepperthot-teal-text valign-wrapper">
-          <img src="{{ category.logo | url }}" id="tgstuff" class="logo" width="32" height="32" alt="Logo">
+          <img src="{{ category.logo }}" id="tgstuff" class="logo" width="32" height="32" alt="Logo">
           <i class="material-icons">arrow_drop_down</i>{{ category.name }}
         </div>
         <div class="collapsible-body white-text left-align">
@@ -92,7 +93,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
-  <script src="{{ '/js/Retrieve.min.js' | url }}"></script>
+  <script src="{{ '/js/Retrieve.min.js' }}"></script>
 </body>
 
 </html>

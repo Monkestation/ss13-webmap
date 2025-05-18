@@ -1,5 +1,7 @@
 node_modules
-dist
+/dist
 
 config.json
 /public
+/dmm-tools*
+/maps

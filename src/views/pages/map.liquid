@@ -2,26 +2,26 @@
 <html lang="en">
 
 <head>
-    <title>SS13 WebMap | {{ server_name }} | {{ map_name }}</title>
+    <title>SS13 WebMap | {{ category }} | {{ map.name }}</title>
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 
     <!-- Metadata -->
     <meta name="description" content="SS13 Web based map viewer built by AffectedArc07" />
-    <meta name="keywords" content="SS13, webmap, Space Station 13, Monkestation, {{ map_name }}" />
+    <meta name="keywords" content="SS13, webmap, Space Station 13, Monkestation, {{ map.name }}" />
     <meta name="author" content="AffectedArc07" />
 
     <!-- OpenGraph Metadata -->
-    <meta property="og:title" content="SS13 WebMap | {{ server_name }} | {{ map_name }}" />
+    <meta property="og:title" content="SS13 WebMap | {{ category }} | {{ map.name }}" />
     <meta property="og:description" content="SS13 Web based map viewer built by AffectedArc07." />
     <meta property="og:type" content="article" />
-    <meta property="og:url" content="{{ site.url }}/map/{{ server_name }}/{{ map_name }}" />
-    <meta property="og:image" content="{{ site.url }}/map/images/webmap-logo.jpg" />
+    <meta property="og:url" content="{{ url }}" />
+    <meta property="og:image" content="{{ url }}/map/images/webmap-logo.jpg" />
 
     <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="SS13 WebMap | {{ server_name }} | {{ map_name }}">
+    <meta name="twitter:title" content="SS13 WebMap | {{ category }} | {{ map.name }}">
     <meta name="twitter:description" content="SS13 Web based map viewer built by AffectedArc07.">
-    <meta name="twitter:image" content="{{ site.url }}/map/images/webmap-logo.jpg">
+    <meta name="twitter:image" content="{{ url }}/map/images/webmap-logo.jpg">
 
     <!-- Import stylesheets -->
     <link rel="stylesheet" href="/css/main.min.css">
@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="/css/leaflet.min.css">
 
     <!-- Import scripts -->
-    <script src="/js/leaflet.js"></script>
+    <script src="/js/leaflet.min.js"></script>
     <script src="/js/coords.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
@@ -42,35 +42,45 @@
     </script>
 </head>
 
-<div class="loader"></div>
 
 <body>
+    <div class="loader"></div>
     <div id="layer1"></div>
     <div id="layer2"></div>
     <div id="layer3"></div>
     <div id="webmap"></div>
     <script type="text/javascript">
-        const bounds = [[0, 0], [-255, 255]];
-        const map_config = {
-            center: [-128, 128],
-            zoom: 4,
-            crs: L.CRS.Simple
-        };
-        const image_config = {
-            map: [{ z: 1, url: "{{ map_base_url }}/{{ map_name }}-1.png" }],
-            pipenet: [{ z: 1, url: "{{ map_base_url }}/pipes/{{ map_name }}-1.png" }]
-        };
+    const bounds = [[0, 0], [-255, 255]];
+    const map_config = {
+      center: [-128, 128],
+      zoom: 4,
+      crs: L.CRS.Simple
+    };
 
-        var webmap = L.map('webmap', map_config);
-        webmap.fitBounds(bounds);
-        webmap.setMaxBounds(bounds);
-        webmap.attributionControl.setPrefix('SS13 WebMap by AffectedArc07');
+    const image_config = {
+      map: [
+        {% for z in (1..map.zLevels) %}
+          { "z": {{ z }}, "url": "/maps/{{ category }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
+        {% endfor %}
+      ],
+      {% if map.supportsPipes %}
+      pipenet: [
+        {% for z in (1..map.zLevels) %}
+          { "z": {{ z }}, "url": "/maps/{{ category }}/pipes/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
+        {% endfor %}
+      ]
+      {% endif %}
+    };
 
-        var lazylayers = bakeLayers(image_config, webmap, bounds);
-        console.info(lazylayers);
-        L.control.layers(lazylayers.mapOpt, lazylayers.pipenet).addTo(webmap);
-        attachListener(webmap, bounds);
-    </script>
+    var webmap = L.map('webmap', map_config);
+    webmap.fitBounds(bounds);
+    webmap.setMaxBounds(bounds);
+    webmap.attributionControl.setPrefix('SS13 WebMap by AffectedArc07');
+
+    var lazylayers = bakeLayers(image_config, webmap, bounds);
+    L.control.layers(lazylayers.mapOpt, lazylayers.pipenet).addTo(webmap);
+    attachListener(webmap, bounds);
+  </script>
 </body>
 
 </html>

@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "MapCategory": {
+            "properties": {
+                "gamePath": {
+                    "description": "the path to the game/codebase",
+                    "type": "string"
+                },
+                "logo": {
+                    "description": "icon file name in the src/public/img/logos folder",
+                    "type": "string"
+                },
+                "mapFilesPath": {
+                    "description": "basePath for maps in this category, relative to the gamePath, for ease of use",
+                    "type": "string"
+                },
+                "maps": {
+                    "items": {
+                        "$ref": "#/definitions/MapInfo"
+                    },
+                    "type": "array"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "MapInfo": {
+            "properties": {
+                "dmmPath": {
+                    "description": "the path to the map, relative to the basePath of the category. Path can be absolute if it differs from the categorys basePath",
+                    "type": "string"
+                },
+                "friendlyName": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "supportsPipes": {
+                    "type": "boolean"
+                },
+                "zLevels": {
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "baseUrl": {
+            "description": "the domain name that this will be hosted on, do not include trailing slash",
+            "type": "string"
+        },
+        "categories": {
+            "items": {
+                "$ref": "#/definitions/MapCategory"
+            },
+            "type": "array"
+        }
+    },
+    "type": "object"
+}
+
