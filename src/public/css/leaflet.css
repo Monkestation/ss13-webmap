@@ -5,7 +5,7 @@
 	width: 100%;
 	z-index: 100;
 }
-	
+
 .leaflet-pane, .leaflet-tile, .leaflet-marker-icon, .leaflet-marker-shadow,
 .leaflet-tile-container, .leaflet-pane > svg, .leaflet-pane > canvas, .leaflet-zoom-box,
 .leaflet-image-layer, .leaflet-layer{
@@ -332,12 +332,12 @@
 	border-radius: 5px;
 }
 .leaflet-control-layers-toggle{
-	background-image: url(../images/layers.png);
+	background-image: url(../img/layers.png);
 	width: 36px;
 	height: 36px;
 }
 .leaflet-retina .leaflet-control-layers-toggle{
-	background-image: url(../images/layers-2x.png);
+	background-image: url(../img/layers-2x.png);
 	background-size: 26px 26px;
 }
 .leaflet-touch .leaflet-control-layers-toggle{
