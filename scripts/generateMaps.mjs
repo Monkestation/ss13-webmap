@@ -64,17 +64,23 @@ const processMaps = async (webmapConfig) => {
   const tasks = [];
 
   for (const category of webmapConfig.categories) {
-    for (const map of category.maps) {
+    const mapCollection = [...category.maps, ...category.subcategories.flatMap(e=>e.maps)]
+    for (const map of mapCollection) {
       let fullDmmPath;
       if (map.dmmPath.startsWith("/"))
         fullDmmPath = map.dmmPath;
       else fullDmmPath = path.join(category.gamePath, category.mapFilesPath, map.dmmPath);
 
-      const command = `${dmmTool} minimap ${fullDmmPath}`;
+      const envFileParam = category.envFile ? ` -e ${path.join(category.gamePath, category.envFile)}` : "";
+
+      const command = `${dmmTool}${envFileParam} minimap ${fullDmmPath} -o ${path.join(process.cwd(), "maps", category.name, map.name)}`;
       tasks.push(() => execCommand(command, category.gamePath));
 
-      if ((map.supportsPipes !== undefined && map.supportsPipes) || map.supportsPipes === undefined) {
-        const pipeCommand = `${dmmTool} minimap --enable only-wires-and-pipes ${fullDmmPath} -o data/minimaps/pipes`;
+      if (
+        map.supportsPipes === true || // map explicitly allows pipes
+        (map.supportsPipes === undefined && category.supportsPipes !== false) // map doesn't say, and category doesn't block
+      ) {
+        const pipeCommand = `${dmmTool}${envFileParam} minimap --enable only-wires-and-pipes ${fullDmmPath} -o ${path.join(process.cwd(), "maps", category.name, "pipes", map.name)}`;
         tasks.push(() => execCommand(pipeCommand, category.gamePath));
       }
     }
@@ -86,22 +92,22 @@ const processMaps = async (webmapConfig) => {
     console.error("Error during map processing:", error);
   }
 
-  console.log("Copying minimaps to data/minimaps folder...");
+  // console.log("Copying minimaps to data/minimaps folder...");
 
-  const copiedFolders = new Set();
-  for (const category of webmapConfig.categories) {
-    const minimapPath = path.join(category.gamePath, "data", "minimaps");
-    const destPath = path.join(process.cwd(), "maps", category.name);
-    const categoryName = category.name;
-    if (copiedFolders.has(categoryName)) {
-      console.log(`Already copied minimaps for ${categoryName}, skipping...`);
-      continue;
-    }
-    copiedFolders.add(categoryName);
-    console.log(`Copying minimaps for ${categoryName}...`);
-    await fs.mkdir(destPath, { recursive: true });
-    await fs.cp(minimapPath, destPath, { recursive: true });
-  }
+  // const copiedFolders = new Set();
+  // for (const category of webmapConfig.categories) {
+  //   const minimapPath = path.join(category.gamePath, "data", "minimaps");
+  //   const destPath = path.join(process.cwd(), "maps", category.name);
+  //   const categoryName = category.name;
+  //   if (copiedFolders.has(categoryName)) {
+  //     console.log(`Already copied minimaps for ${categoryName}, skipping...`);
+  //     continue;
+  //   }
+  //   copiedFolders.add(categoryName);
+  //   console.log(`Copying minimaps for ${categoryName}...`);
+  //   await fs.mkdir(destPath, { recursive: true });
+  //   await fs.cp(minimapPath, destPath, { recursive: true });
+  // }
   console.log("All maps processed successfully.");
 };
 

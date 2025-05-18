@@ -33,7 +33,7 @@ function bakeLayers(data, webmap, bounds){
         return_dat.mapOpt[zname] = image; // {mapOpt:{"z1":"imageOverlay"}}
     }
     console.info("done baking map");
-    if(pipenetjson.length === 0){ //early return because pipenetjson length is 0
+    if(!pipenetjson || pipenetjson.length === 0){ //early return because pipenetjson length is 0
         console.info("no pipenet found, skipping pipenet baking");
         return return_dat
     }

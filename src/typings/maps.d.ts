@@ -4,7 +4,9 @@ export interface MapInfo {
   /** @description the path to the map, relative to the basePath of the category. Path can be absolute if it differs from the categorys basePath */
   dmmPath: string;
   zLevels: number;
-  supportsPipes: boolean;
+  supportsPipes?: boolean;
+  doFTL?: boolean;
+
 }
 
 export interface MapSubCategory {
@@ -19,8 +21,12 @@ export interface MapCategory {
   logo: string;
   /** @description the path to the game/codebase */
   gamePath: string;
+  /** @description By default this is tgstation.dme, but you can specify others like vanderlin.dme */
+  envFile: string;
   /** @description basePath for maps in this category, relative to the gamePath, for ease of use */
   mapFilesPath: string;
+  supportsPipes?: boolean;
+  doFTL?: boolean;
   maps: MapInfo[];
   subcategories?: MapSubCategory[];
 }

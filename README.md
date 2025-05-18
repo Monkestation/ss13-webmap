@@ -9,4 +9,5 @@ This project still relys on DMM-Tools from [SpacemanDMM](https://github.com/Spac
 [License](LICENSE.md)
 
 TODO:
-- [ ] better generated map organization (right now it just dumps everything into one folder for each category some filenames could clash...)
+- [x] better generated map organization (right now it just dumps everything into one folder for each category some filenames could clash...)
+- [ ] Work on metadata for map previews on platforms like Discord

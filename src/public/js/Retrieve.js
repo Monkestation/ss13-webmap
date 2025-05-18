@@ -1,4 +1,4 @@
-const apiURL = 'https://api.github.com/repos/AffectedArc07/SS13WebMap/commits?per_page=5';
+const apiURL = 'https://api.github.com/repos/monkestation/ss13-webmap/commits?per_page=5';
 
 const config = {
     el:'#gitlog',

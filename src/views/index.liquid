@@ -2,13 +2,16 @@
 <html lang="en">
 
   <head>
+
     <title>Monkestation Webmap</title>
     <link
       rel="shortcut icon"
       href="favicon.ico"
       type="image/x-icon">
 
-      <!-- Metadata -->
+    {% render "snippets/basecss.liquid" %}
+
+    <!-- Metadata -->
     <meta name="description" content="SS13 Web based map viewer built by AffectedArc07" />
     <meta name="keywords" content="SS13, webmap, Space Station 13" />
     <meta name="author" content="AffectedArc07,Flleeppyy" />
@@ -29,12 +32,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <style>
-      body {
-        background-color: #222;
-      }
-    </style>
-    <!-- Styles -->
+
+      <!-- Styles -->
     <link rel="stylesheet" href="/css/main.min.css">
     <link rel="stylesheet" href="/css/materialize.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
@@ -53,7 +52,7 @@
     {% comment %} <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115958323-1"></script> {% endcomment %}
     {% comment %} <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> {% endcomment %}
 
-    {% render "snippets/loader.liquid" mainPage: true %}
+    {% render "snippets/loader.liquid" mainPage: true doFTL: true %}
   </head>
 
   <body>
@@ -93,7 +92,12 @@
                 height="32"
                 alt="Logo">
               <i class="material-icons">arrow_drop_down</i>
-              {{ category.name }}</div>
+              {% if category.friendlyName %}
+                {{ category.friendlyName }}
+              {% else %}
+                {{ category.name }}
+              {% endif %}
+            </div>
             <div class="collapsible-body white-text left-align">
               <h5 style="margin-top: 0; line-height: 100%;">
                 Maps

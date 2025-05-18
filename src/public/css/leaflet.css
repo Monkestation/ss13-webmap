@@ -4,6 +4,7 @@
 	height: 100%;
 	width: 100%;
 	z-index: 100;
+  background: #00000000;
 }
 
 .leaflet-pane, .leaflet-tile, .leaflet-marker-icon, .leaflet-marker-shadow,
@@ -378,7 +379,7 @@
 
 /* Default icon URLs */
 .leaflet-default-icon-path{
-	background-image: url(../images/marker-icon.png);
+	background-image: url(../img/marker-icon.png);
 }
 
 

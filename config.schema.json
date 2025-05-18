@@ -3,6 +3,10 @@
     "definitions": {
         "MapCategory": {
             "properties": {
+                "envFile": {
+                    "description": "By default this is tgstation.dme, but you can specify others like vanderlin.dme",
+                    "type": "string"
+                },
                 "friendlyName": {
                     "type": "string"
                 },
@@ -32,6 +36,9 @@
                         "$ref": "#/definitions/MapSubCategory"
                     },
                     "type": "array"
+                },
+                "supportsPipes": {
+                    "type": "boolean"
                 }
             },
             "type": "object"

@@ -1,29 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
+  <head>
     <title>SS13 WebMap | {{ category }} | {{ map.name }}</title>
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link
+      rel="shortcut icon"
+      href="/favicon.ico"
+      type="image/x-icon">
+
+    {% render "snippets/basecss.liquid" %}
 
     <!-- Metadata -->
     <meta name="description" content="SS13 Web based map viewer built by AffectedArc07" />
     <meta name="keywords" content="SS13, webmap, Space Station 13, Monkestation, {{ map.name }}" />
     <meta name="author" content="AffectedArc07" />
 
-    <!-- OpenGraph Metadata -->
+      <!-- OpenGraph Metadata -->
     <meta property="og:title" content="SS13 WebMap | {{ category }} | {{ map.name }}" />
     <meta property="og:description" content="SS13 Web based map viewer built by AffectedArc07." />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="{{ url }}" />
-    <meta property="og:image" content="{{ url }}/map/images/webmap-logo.jpg" />
+    <meta property="og:image" content="{{ url }}/map/img/webmap-logo.jpg" />
 
-    <!-- Twitter Card data -->
+      <!-- Twitter Card data -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="SS13 WebMap | {{ category }} | {{ map.name }}">
     <meta name="twitter:description" content="SS13 Web based map viewer built by AffectedArc07.">
-    <meta name="twitter:image" content="{{ url }}/map/images/webmap-logo.jpg">
+    <meta name="twitter:image" content="{{ url }}/map/img/webmap-logo.jpg">
 
-    <!-- Import stylesheets -->
+      <!-- Import stylesheets -->
     <link rel="stylesheet" href="/css/main.min.css">
     <link rel="stylesheet" href="/css/materialize.min.css">
     <link rel="stylesheet" href="/css/leaflet.min.css">
@@ -31,52 +36,55 @@
     <!-- Import scripts -->
     <script src="/js/leaflet.min.js"></script>
     <script src="/js/coords.min.js"></script>
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-2.2.4.min.js"
+      integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+      crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
 
-    {% render "snippets/loader.liquid" %}
+    {% render "snippets/loader.liquid" doFTL: map.doFTL %}
 
-</head>
+  </head>
 
 
-<body>
+  <body>
     <div class="loader"></div>
     <div id="layer1"></div>
     <div id="layer2"></div>
     <div id="layer3"></div>
     <div id="webmap"></div>
     <script type="text/javascript">
-    const bounds = [[0, 0], [-255, 255]];
-    const map_config = {
+          const bounds = [[0, 0], [-255, 255]];
+          const map_config = {
       center: [-128, 128],
       zoom: 4,
       crs: L.CRS.Simple
-    };
+          };
 
-    const image_config = {
+          const image_config = {
       map: [
         {% for z in (1..map.zLevels) %}
-          { "z": {{ z }}, "url": "/maps/{{ category }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
+          { "z": {{ z }}, "url": "/maps/{{ category }}/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
         {% endfor %}
       ],
       {% if map.supportsPipes %}
       pipenet: [
         {% for z in (1..map.zLevels) %}
-          { "z": {{ z }}, "url": "/maps/{{ category }}/pipes/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
+          { "z": {{ z }}, "url": "/maps/{{ category }}/pipes/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
         {% endfor %}
       ]
       {% endif %}
-    };
+          };
 
-    var webmap = L.map('webmap', map_config);
-    webmap.fitBounds(bounds);
-    webmap.setMaxBounds(bounds);
-    webmap.attributionControl.setPrefix('SS13 WebMap by AffectedArc07');
+          var webmap = L.map('webmap', map_config);
+          webmap.fitBounds(bounds);
+          webmap.setMaxBounds(bounds);
+          webmap.attributionControl.setPrefix('SS13 WebMap by AffectedArc07');
 
-    var lazylayers = bakeLayers(image_config, webmap, bounds);
-    L.control.layers(lazylayers.mapOpt, lazylayers.pipenet).addTo(webmap);
-    attachListener(webmap, bounds);
-  </script>
-</body>
+          var lazylayers = bakeLayers(image_config, webmap, bounds);
+          L.control.layers(lazylayers.mapOpt, lazylayers.pipenet).addTo(webmap);
+          attachListener(webmap, bounds);
+    </script>
+  </body>
 
 </html>

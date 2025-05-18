@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "cross-env LEVEL=debug NODE_ENV=development tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && pnpm esbuild",
     "start": "cross-env NODE_ENV=production node dist/index.js",
     "esbuild": "node scripts/esbuild.mjs",
     "esbuild:watch": "node scripts/esbuild.mjs --watch",

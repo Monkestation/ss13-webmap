@@ -30,6 +30,9 @@
     else
       $(".loader").fadeOut("slow");
 
-    initFTL("E", "tg", undefined, prefersReducedMotion.matches);
+    {% if doFTL %}
+      initFTL("E", "tg", undefined, prefersReducedMotion.matches);
+    {% endif %}
+
   });
 </script>

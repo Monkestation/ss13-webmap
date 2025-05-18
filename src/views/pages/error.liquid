@@ -8,7 +8,9 @@
       href="/favicon.ico"
       type="image/x-icon">
 
-      <!-- Metadata -->
+    {% render "snippets/basecss.liquid" %}
+
+    <!-- Metadata -->
     <meta name="description" content="SS13 Web based map viewer built by AffectedArc07" />
     <meta name="keywords" content="SS13, webmap, Space Station 13, Monkestation, {{ map_name }}" />
     <meta name="author" content="AffectedArc07" />
@@ -38,10 +40,8 @@
       crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
 
-    {% render "snippets/loader.liquid" %}
+    {% render "snippets/loader.liquid" doFTL: true %}
   </head>
-
-
   <body>
     <div class="loader"></div>
     <div id="layer1"></div>

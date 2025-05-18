@@ -1,4 +1,3 @@
 css/*.min.css
 js/*.min.js
 !js/leaflet.min.js
-!css/leaflet.min.css

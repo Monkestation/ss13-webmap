@@ -100,7 +100,7 @@ app.get('/maps/:category/:map(^[^.]+$)', async (request, reply) => {
   let zLevels = 1;
 
   const zLevelRegex = new RegExp(`^${mapConfig.name}-(\\d+)`, "i");
-  const mapFiles = await fs.readdir(path.join(MAPS_PATH, categoryConfig.name));
+  const mapFiles = await fs.readdir(path.join(MAPS_PATH, categoryConfig.name, mapConfig.name));
   const mapFilesWithZLevels = mapFiles.filter((file) => zLevelRegex.test(file));
   zLevels = mapFilesWithZLevels.length;
 
@@ -111,7 +111,8 @@ app.get('/maps/:category/:map(^[^.]+$)', async (request, reply) => {
       name: mapConfig.name,
       friendlyName: mapConfig.friendlyName,
       zLevels,
-      supportsPipes: mapConfig.supportsPipes ?? true,
+      supportsPipes: mapConfig.supportsPipes ?? (categoryConfig.supportsPipes !== false),
+      doFTL: mapConfig.doFTL ?? (categoryConfig.doFTL !== false)
     },
   });
 });
