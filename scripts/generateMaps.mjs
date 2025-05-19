@@ -68,7 +68,11 @@ const runLimited = async (tasks, limit) => {
  */
 async function getZLevelCount(fullDmmPath, cwd) {
   try {
-    const stdout = await execCommand(`${dmmTool} map-info "${fullDmmPath}"`, cwd, false);
+    const stdout = await execCommand(
+      `${dmmTool} map-info "${fullDmmPath}"`,
+      cwd,
+      false,
+    );
     const match = stdout.match(/"size":\[\d+,\d+,(\d+)\]/);
     return match ? Number.parseInt(match[1], 10) : 1;
   } catch (e) {
@@ -81,7 +85,7 @@ async function getZLevelCount(fullDmmPath, cwd) {
  * @param {string} outDir
  * @param {string} mapName
  * @param {number} zLevels
- * @returns {true | false | string[]}
+ * @returns {Promise<true | false | string[]>}
  */
 async function shouldRenderMap(outDir, mapName, zLevels) {
   const missing = [];
@@ -101,16 +105,39 @@ async function shouldRenderMap(outDir, mapName, zLevels) {
 }
 /**
  *
+ * @param {string} dmmPath
+ * @param {string} outDir
+ * @returns {Promise<void>}
+ */
+function getMapInfoTask(dmmPath, outDir) {
+  return async () => {
+    const mapInfoRaw = await execCommand(
+      `${dmmTool} map-info "${dmmPath}"`,
+      undefined,
+      false,
+    );
+    const mapInfo = JSON.parse(mapInfoRaw);
+    console.log(mapInfo)
+    await fs.mkdir(outDir, { recursive: true });
+    await fs.writeFile(
+      path.join(outDir, "mapinfo.json"),
+      JSON.stringify(Object.values(mapInfo)[0]),
+      "utf-8",
+    );
+  }
+}
+/**
+ *
  * @param {import('../src/typings/maps').MapConfig} webmapConfig
  */
 const processMaps = async (webmapConfig) => {
   const tasks = [];
-  const optipngParam = optipng ? " --optipng" : ""
-  const pngcrushParam = pngcrush ? " --pngcrush" : ""
+  const optipngParam = optipng ? " --optipng" : "";
+  const pngcrushParam = pngcrush ? " --pngcrush" : "";
 
   const additionalParams = `${optipngParam}${pngcrushParam}`;
 
-  console.log("Processing and calculating map Z-levels")
+  console.log("Processing and calculating map Z-levels");
   for (const category of webmapConfig.categories) {
     for (const sub of category.subcategories ?? []) {
       for (const map of sub.maps ?? []) {
@@ -143,6 +170,7 @@ const processMaps = async (webmapConfig) => {
         if (!effectiveRenderOnce || !!renderCheck) {
           const command = `${dmmTool}${envFileParam} minimap "${fullDmmPath}" -o "${outDir}"${additionalParams}`;
           tasks.push(() => execCommand(command, category.gamePath, true));
+          tasks.push(getMapInfoTask(fullDmmPath, outDir));
         }
 
         if (effectiveSupportsPipes) {
@@ -178,9 +206,10 @@ const processMaps = async (webmapConfig) => {
 
       const renderCheck = await shouldRenderMap(outDir, map.name, zLevels);
 
-        if (!effectiveRenderOnce || !!renderCheck) {
+      if (!effectiveRenderOnce || !!renderCheck) {
         const command = `${dmmTool}${envFileParam} minimap "${fullDmmPath}" -o "${outDir}"${additionalParams}`;
         tasks.push(() => execCommand(command, category.gamePath));
+        tasks.push(getMapInfoTask(fullDmmPath, outDir));
       }
 
       if (effectiveSupportsPipes) {
@@ -208,26 +237,25 @@ const processMaps = async (webmapConfig) => {
 
 async function detectOptiPNG() {
   try {
-    await execCommand('optipng -v');
-    console.log('OptiPNG detected.');
+    await execCommand("optipng -v");
+    console.log("OptiPNG detected.");
     return true;
   } catch (error) {
-    console.log('OptiPNG not detected.');
+    console.log("OptiPNG not detected.");
     return false;
   }
 }
 
 async function detectPNGCrush() {
   try {
-    await execCommand('pngcrush -version');
-    console.log('PngCrush detected.');
+    await execCommand("pngcrush -version");
+    console.log("PngCrush detected.");
     return true;
   } catch (error) {
-    console.log('PngCrush not detected.');
+    console.log("PngCrush not detected.");
     return false;
   }
 }
-
 
 const main = async () => {
   let dmmToolPath;

@@ -11,8 +11,6 @@ import { logger } from "./logger";
 
 let config = JSON.parse(fsSync.readFileSync(path.join(process.cwd(), "config.json"), "utf-8")) as MapConfig;
 
-const MAPS_PATH = path.join(process.cwd(), "maps");
-
 const app = Fastify({ loggerInstance: logger });
 
 app.register(fastifyStatic, {
@@ -132,17 +130,6 @@ async function handleMapRequest(request: FastifyRequest, reply: FastifyReply, ha
     });
   }
 
-  const mapDir = path.join(
-    MAPS_PATH,
-    categoryConfig.name,
-    subcategoryConfig?.name ?? "",
-    mapConfig.name
-  );
-
-  const zLevelRegex = new RegExp(`^${path.basename(mapConfig.dmmPath).split(".")[0]}-(\\d+)`, "i");
-  const mapFiles = await fs.readdir(mapDir);
-  const mapFilesWithZLevels = mapFiles.filter((file) => zLevelRegex.test(file));
-  const zLevels = mapFilesWithZLevels.length;
 
   return reply.view("pages/map.liquid", {
     url: `${config.baseUrl}/${request.url}`,
@@ -151,7 +138,6 @@ async function handleMapRequest(request: FastifyRequest, reply: FastifyReply, ha
     map: {
       name: mapConfig.name,
       friendlyName: mapConfig.friendlyName,
-      zLevels,
       supportsPipes: mapConfig.supportsPipes ?? subcategoryConfig?.supportsPipes ?? categoryConfig.supportsPipes !== false,
       doFTL: mapConfig.doFTL ?? subcategoryConfig?.doFTL ?? categoryConfig.doFTL !== false
     },
@@ -188,4 +174,8 @@ fswatch(configFile, async (eventType, filename) => {
     config = parsedConfig;
     logger.info("New config loaded", parsedConfig);
   }
+});
+
+process.on("uncaughtException", (error) => {
+  logger.error(error);
 });

@@ -54,45 +54,58 @@
     <div id="layer3"></div>
     <div id="webmap"></div>
     <script type="text/javascript">
-      const bounds = [[0, 0], [-255, 255]];
+        // Construct the base path for map assets
+        const basePath = `{% if subcategory %}/maps/{{ category }}/{{ subcategory }}/{% else %}/maps/{{ category }}/{% endif %}{{ map.name }}`;
+
+        // Fetch mapinfo.json and initialize map
+        fetch(`${basePath}/mapinfo.json`)
+          .then(response => {
+      if (!response.ok) throw new Error('Failed to load mapinfo.json');
+      return response.json();
+          })
+          .then(data => {
+      const [x, y, z] = data.size;
+
+      // Calculate bounds: top-left to bottom-right (Leaflet uses lat/lng, so invert Y axis)
+      const bounds = [[0, 0], [-y, x]];
+
       const map_config = {
-        center: [-128, 128],
+        center: [-y / 2, x / 2],
         zoom: 4,
         crs: L.CRS.Simple
       };
 
       const image_config = {
-        map: [
-          {% for z in (1..map.zLevels) %}
-            {% if subcategory %}
-              { "z": {{ z }}, "url": "/maps/{{ category }}/{{ subcategory }}/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
-                {% else %}
-              { "z": {{ z }}, "url": "/maps/{{ category }}/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
-                {% endif %}
-          {% endfor %}
-        ],
-        {% if map.supportsPipes %}
-        pipenet: [
-          {% for z in (1..map.zLevels) %}
-            {% if subcategory %}
-              { "z": {{ z }}, "url": "/maps/{{ category }}/{{ subcategory }}/pipes/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
-            {% else %}
-              { "z": {{ z }}, "url": "/maps/{{ category }}/pipes/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
-            {% endif %}
-
-          {% endfor %}
-        ]
-        {% endif %}
+        map: [],
+        {% if map.supportsPipes %}pipenet: [],{% endif %}
       };
 
-      var webmap = L.map('webmap', map_config);
+      for (let level = 1; level <= z; level++) {
+        image_config.map.push({
+          z: level,
+          url: `{% if subcategory %}/maps/{{ category }}/{{ subcategory }}/{{ map.name }}/{% else %}/maps/{{ category }}/{{ map.name }}/{% endif %}{{ map.name }}-${level}.png`
+        });
+
+        {% if map.supportsPipes %}
+        image_config.pipenet.push({
+          z: level,
+          url: `{% if subcategory %}/maps/{{ category }}/{{ subcategory }}/pipes/{{ map.name }}/{% else %}/maps/{{ category }}/pipes/{{ map.name }}/{% endif %}{{ map.name }}-${level}.png`
+        });
+        {% endif %}
+      }
+
+      const webmap = L.map('webmap', map_config);
       webmap.fitBounds(bounds);
       webmap.setMaxBounds(bounds);
       webmap.attributionControl.setPrefix('SS13 WebMap by AffectedArc07');
 
-      var lazylayers = bakeLayers(image_config, webmap, bounds);
+      const lazylayers = bakeLayers(image_config, webmap, bounds);
       L.control.layers(lazylayers.mapOpt, lazylayers.pipenet).addTo(webmap);
       attachListener(webmap, bounds);
+          })
+          .catch(err => {
+      console.error('Error loading map info:', err);
+          });
     </script>
   </body>
 

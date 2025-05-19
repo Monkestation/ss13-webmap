@@ -116,7 +116,12 @@
               {% endfor %}
               {% for subcategory in category.subcategories %}
                 <h5>
-                  {{ subcategory.name }}</h5>
+                  {% if subcategory.friendlyName %}
+                    {{ subcategory.friendlyName }}
+                  {% else %}
+                    {{ subcategory.name }}
+                  {% endif %}
+                </h5>
                 <hr>
                 {% for map in subcategory.maps %}
                   <a class="btn ss13-blue" href="{{ map.url }}">
