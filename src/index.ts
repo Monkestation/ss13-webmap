@@ -75,12 +75,13 @@ app.get('/maps/:category/:map(^[^.]+$)', async (request, reply) => {
 });
 
 // Shared handler
-async function handleMapRequest(request: FastifyRequest, reply: FastifyReply, hasSubcategory: boolean) {
-  const { category: rCategory, map: rMap } = request.params as {
+async function handleMapRequest(_request: FastifyRequest, reply: FastifyReply, hasSubcategory: boolean) {
+  const request = _request as FastifyRequest<{Params: {
     category: string;
     subcategory?: string;
     map: string;
-  };
+  }}>;
+  const { category: rCategory, map: rMap } = request.params;
 
   const rSubcategory = hasSubcategory ? request.params.subcategory : undefined;
 
