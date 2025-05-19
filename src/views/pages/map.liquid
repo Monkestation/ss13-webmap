@@ -96,7 +96,7 @@
 
       const webmap = L.map('webmap', map_config);
       webmap.fitBounds(bounds);
-      webmap.setMaxBounds(bounds);
+      // webmap.setMaxBounds(bounds);
       webmap.attributionControl.setPrefix('SS13 WebMap by AffectedArc07');
 
       const lazylayers = bakeLayers(image_config, webmap, bounds);
