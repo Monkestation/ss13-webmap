@@ -80,6 +80,7 @@ async function getZLevelCount(fullDmmPath, cwd) {
     return 1;
   }
 }
+
 /**
  *
  * @param {string} outDir
@@ -88,20 +89,15 @@ async function getZLevelCount(fullDmmPath, cwd) {
  * @returns {Promise<true | false | string[]>}
  */
 async function shouldRenderMap(outDir, mapName, zLevels) {
-  const missing = [];
-
   for (let i = 0; i < zLevels; i++) {
     const filePath = path.join(outDir, `${mapName}-${i}.png`);
     try {
       await fs.access(filePath);
     } catch {
-      missing.push(filePath);
+      return true; // file missing
     }
   }
-
-  if (missing.length === 0) return true;
-  if (missing.length === zLevels) return false;
-  return missing;
+  return false;
 }
 /**
  *
@@ -164,25 +160,25 @@ const processMaps = async (webmapConfig) => {
         );
         const zLevels = getZLevelCount(fullDmmPath);
 
-        const renderCheck = await shouldRenderMap(outDir, map.name, zLevels);
+        const renderCheck = await shouldRenderMap(outDir, path.basename(fullDmmPath), zLevels);
 
         if (!effectiveRenderOnce || !!renderCheck) {
           const command = `${dmmTool}${envFileParam} minimap "${fullDmmPath}" -o "${outDir}"${additionalParams}`;
           tasks.push(() => execCommand(command, category.gamePath));
           tasks.push(getMapInfoTask(fullDmmPath, outDir));
-        }
 
-        if (effectiveSupportsPipes) {
-          const pipeDir = path.join(
-            process.cwd(),
-            "maps",
-            category.name,
-            sub.name,
-            "pipes",
-            map.name,
-          );
-          const pipeCommand = `${dmmTool}${envFileParam} minimap --enable only-wires-and-pipes "${fullDmmPath}" -o "${pipeDir}"${additionalParams}`;
-          tasks.push(() => execCommand(pipeCommand, category.gamePath));
+          if (effectiveSupportsPipes) {
+            const pipeDir = path.join(
+              process.cwd(),
+              "maps",
+              category.name,
+              sub.name,
+              "pipes",
+              map.name,
+            );
+            const pipeCommand = `${dmmTool}${envFileParam} minimap --enable only-wires-and-pipes "${fullDmmPath}" -o "${pipeDir}"${additionalParams}`;
+            tasks.push(() => execCommand(pipeCommand, category.gamePath));
+          }
         }
       }
     }
@@ -203,7 +199,7 @@ const processMaps = async (webmapConfig) => {
       const outDir = path.join(process.cwd(), "maps", category.name, map.name);
       const zLevels = getZLevelCount(fullDmmPath);
 
-      const renderCheck = await shouldRenderMap(outDir, map.name, zLevels);
+      const renderCheck = await shouldRenderMap(outDir, path.basename(fullDmmPath), zLevels);
 
       if (!effectiveRenderOnce || !!renderCheck) {
         const command = `${dmmTool}${envFileParam} minimap "${fullDmmPath}" -o "${outDir}"${additionalParams}`;
