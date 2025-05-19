@@ -117,7 +117,6 @@ function getMapInfoTask(dmmPath, outDir) {
       false,
     );
     const mapInfo = JSON.parse(mapInfoRaw);
-    console.log(mapInfo)
     await fs.mkdir(outDir, { recursive: true });
     await fs.writeFile(
       path.join(outDir, "mapinfo.json"),
