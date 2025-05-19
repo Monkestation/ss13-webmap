@@ -169,7 +169,7 @@ const processMaps = async (webmapConfig) => {
 
         if (!effectiveRenderOnce || !!renderCheck) {
           const command = `${dmmTool}${envFileParam} minimap "${fullDmmPath}" -o "${outDir}"${additionalParams}`;
-          tasks.push(() => execCommand(command, category.gamePath, true));
+          tasks.push(() => execCommand(command, category.gamePath));
           tasks.push(getMapInfoTask(fullDmmPath, outDir));
         }
 
@@ -183,7 +183,7 @@ const processMaps = async (webmapConfig) => {
             map.name,
           );
           const pipeCommand = `${dmmTool}${envFileParam} minimap --enable only-wires-and-pipes "${fullDmmPath}" -o "${pipeDir}"${additionalParams}`;
-          tasks.push(() => execCommand(pipeCommand, category.gamePath, true));
+          tasks.push(() => execCommand(pipeCommand, category.gamePath));
         }
       }
     }
@@ -237,7 +237,7 @@ const processMaps = async (webmapConfig) => {
 
 async function detectOptiPNG() {
   try {
-    await execCommand("optipng -v");
+    await execCommand("optipng -v", undefined, false);
     console.log("OptiPNG detected.");
     return true;
   } catch (error) {
@@ -248,7 +248,7 @@ async function detectOptiPNG() {
 
 async function detectPNGCrush() {
   try {
-    await execCommand("pngcrush -version");
+    await execCommand("pngcrush -version", undefined, false);
     console.log("PngCrush detected.");
     return true;
   } catch (error) {
