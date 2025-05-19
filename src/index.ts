@@ -1,9 +1,9 @@
-import Fastify from "fastify";
+import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import pointOfView from "@fastify/view";
 import fastifyStatic from "@fastify/static";
 import { Liquid } from "liquidjs";
 import path from "node:path";
-import type { MapConfig } from "typings/maps";
+import type { MapConfig, MapSubCategory } from "typings/maps";
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import { watch as fswatch } from "node:fs";
@@ -45,27 +45,46 @@ app.get("/", async (request, reply) => {
     url: `${config.baseUrl}/${request.url}`,
     categories: config.categories.map((cat) => ({
       name: cat.name,
+      friendlyName: cat.friendlyName,
       // logo name must end in the right extension
       logo: `/img/logos/${cat.logo}`,
-      maps: cat.maps.map((map) => ({
+      maps: cat.maps?.map((map) => ({
         name: map.name,
         friendlyName: map.friendlyName,
         url: `/maps/${cat.name}/${map.name}`,
       })),
       subcategories: cat.subcategories?.map((subcat) => ({
         name: subcat.name,
+        friendlyName: subcat.friendlyName,
         maps: subcat.maps.map((map) => ({
           name: map.name,
           friendlyName: map.friendlyName,
-          url: `/maps/${cat.name}/${map.name}`,
+          url: `/maps/${cat.name}/${subcat.name}/${map.name}`,
         })),
       })),
     })),
   });
 });
 
+// Route: /maps/:category/:subcategory/:map
+app.get('/maps/:category/:subcategory/:map(^[^.]+$)', async (request, reply) => {
+  return handleMapRequest(request, reply, true);
+});
+
+// Route: /maps/:category/:map
 app.get('/maps/:category/:map(^[^.]+$)', async (request, reply) => {
-  const { category: rCategory, map: rMap } = request.params as { category: string; map: string };
+  return handleMapRequest(request, reply, false);
+});
+
+// Shared handler
+async function handleMapRequest(request: FastifyRequest, reply: FastifyReply, hasSubcategory: boolean) {
+  const { category: rCategory, map: rMap } = request.params as {
+    category: string;
+    subcategory?: string;
+    map: string;
+  };
+
+  const rSubcategory = hasSubcategory ? request.params.subcategory : undefined;
 
   const categoryConfig = config.categories.find((cat) => cat.name === rCategory);
 
@@ -76,14 +95,30 @@ app.get('/maps/:category/:map(^[^.]+$)', async (request, reply) => {
     });
   }
 
-  let mapConfig = categoryConfig.maps.find((map) => map.friendlyName === rMap || map.name === rMap);
+  let mapConfig: any = null;
+  let subcategoryConfig: MapSubCategory | null | undefined = null;
 
-  if (!mapConfig) {
-    // check subcategories
-    if (categoryConfig.subcategories) {
+  if (rSubcategory && categoryConfig.subcategories) {
+    subcategoryConfig = categoryConfig.subcategories.find((subcat) => subcat.name === rSubcategory);
+
+    if (!subcategoryConfig) {
+      return reply.status(404).view("pages/error.liquid", {
+        errorCode: 404,
+        message: `Subcategory ${rSubcategory} not found in ${rCategory}`,
+      });
+    }
+
+    mapConfig = subcategoryConfig.maps.find((map) => map.friendlyName === rMap || map.name === rMap);
+  } else {
+    mapConfig = categoryConfig.maps?.find((map) => map.friendlyName === rMap || map.name === rMap);
+
+    // fallback: look through subcategories if not found in root
+    if (!mapConfig && categoryConfig.subcategories) {
       for (const subcat of categoryConfig.subcategories) {
-        mapConfig = subcat.maps.find((map) => map.friendlyName === rMap || map.name === rMap);
-        if (mapConfig) {
+        const foundMap = subcat.maps.find((map) => map.friendlyName === rMap || map.name === rMap);
+        if (foundMap) {
+          mapConfig = foundMap;
+          subcategoryConfig = subcat;
           break;
         }
       }
@@ -93,29 +128,35 @@ app.get('/maps/:category/:map(^[^.]+$)', async (request, reply) => {
   if (!mapConfig) {
     return reply.status(404).view("pages/error.liquid", {
       errorCode: 404,
-      message: `Map ${rMap} not found in category ${rCategory}`,
+      message: `Map ${rMap} not found in ${rSubcategory ? `subcategory ${rSubcategory} of ` : ''}category ${rCategory}`,
     });
   }
 
-  let zLevels = 1;
+  const mapDir = path.join(
+    MAPS_PATH,
+    categoryConfig.name,
+    subcategoryConfig?.name ?? "",
+    mapConfig.name
+  );
 
-  const zLevelRegex = new RegExp(`^${mapConfig.name}-(\\d+)`, "i");
-  const mapFiles = await fs.readdir(path.join(MAPS_PATH, categoryConfig.name, mapConfig.name));
+  const zLevelRegex = new RegExp(`^${path.basename(mapConfig.dmmPath).split(".")[0]}-(\\d+)`, "i");
+  const mapFiles = await fs.readdir(mapDir);
   const mapFilesWithZLevels = mapFiles.filter((file) => zLevelRegex.test(file));
-  zLevels = mapFilesWithZLevels.length;
+  const zLevels = mapFilesWithZLevels.length;
 
   return reply.view("pages/map.liquid", {
     url: `${config.baseUrl}/${request.url}`,
     category: rCategory,
+    subcategory: subcategoryConfig?.name ?? null,
     map: {
       name: mapConfig.name,
       friendlyName: mapConfig.friendlyName,
       zLevels,
-      supportsPipes: mapConfig.supportsPipes ?? (categoryConfig.supportsPipes !== false),
-      doFTL: mapConfig.doFTL ?? (categoryConfig.doFTL !== false)
+      supportsPipes: mapConfig.supportsPipes ?? subcategoryConfig?.supportsPipes ?? categoryConfig.supportsPipes !== false,
+      doFTL: mapConfig.doFTL ?? subcategoryConfig?.doFTL ?? categoryConfig.doFTL !== false
     },
   });
-});
+}
 
 app.setNotFoundHandler((request, reply) => {
   return reply.status(404).view("pages/error.liquid", {

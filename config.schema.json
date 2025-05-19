@@ -3,6 +3,9 @@
     "definitions": {
         "MapCategory": {
             "properties": {
+                "doFTL": {
+                    "type": "boolean"
+                },
                 "envFile": {
                     "description": "By default this is tgstation.dme, but you can specify others like vanderlin.dme",
                     "type": "string"
@@ -31,6 +34,9 @@
                 "name": {
                     "type": "string"
                 },
+                "renderOnce": {
+                    "type": "boolean"
+                },
                 "subcategories": {
                     "items": {
                         "$ref": "#/definitions/MapSubCategory"
@@ -49,23 +55,32 @@
                     "description": "the path to the map, relative to the basePath of the category. Path can be absolute if it differs from the categorys basePath",
                     "type": "string"
                 },
+                "doFTL": {
+                    "type": "boolean"
+                },
                 "friendlyName": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "supportsPipes": {
+                "renderOnce": {
                     "type": "boolean"
                 },
-                "zLevels": {
-                    "type": "number"
+                "supportsPipes": {
+                    "type": "boolean"
                 }
             },
             "type": "object"
         },
         "MapSubCategory": {
             "properties": {
+                "doFTL": {
+                    "type": "boolean"
+                },
+                "friendlyName": {
+                    "type": "string"
+                },
                 "maps": {
                     "items": {
                         "$ref": "#/definitions/MapInfo"
@@ -74,6 +89,12 @@
                 },
                 "name": {
                     "type": "string"
+                },
+                "renderOnce": {
+                    "type": "boolean"
+                },
+                "supportsPipes": {
+                    "type": "boolean"
                 }
             },
             "type": "object"

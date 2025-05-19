@@ -99,10 +99,12 @@
               {% endif %}
             </div>
             <div class="collapsible-body white-text left-align">
-              <h5 style="margin-top: 0; line-height: 100%;">
-                Maps
-              </h5>
-              <hr>
+              {% if category.maps.size > 0 %}
+                <h5 style="margin-top: 0; line-height: 100%;">
+                  Maps
+                </h5>
+                <hr>
+              {% endif %}
               {% for map in category.maps %}
                 <a class="btn ss13-blue" href="{{ map.url }}">
                   {% if map.friendlyName %}

@@ -11,25 +11,30 @@ import { exec } from "node:child_process";
 import path, { isAbsolute } from "node:path";
 import fs from "node:fs/promises";
 
+let optipng = false;
+let pngcrush = false;
+
 const taskLimit = process.env.TASK_LIMIT || 2;
 
-console.info(`Generating maps with a task limit of ${taskLimit} (set via TASK_LIMIT env var)`);
-// const dmmTool = `"D:\\WEBSITE_RELATIONS\\map_renderer\\dmm-tools.exe"`;
+console.info(
+  `Generating maps with a task limit of ${taskLimit} (set via TASK_LIMIT env var)`,
+);
+
 let dmmTool = process.env.DMM_TOOL || "dmm-tools";
 
-const execCommand = (command, cwd) => {
+const execCommand = (command, cwd, log = true) => {
   let realCwd = cwd;
   if (!cwd) {
     realCwd = process.cwd();
   }
   return new Promise((resolve, reject) => {
-    console.log(`Executing: ${command} in ${realCwd}`);
+    log && console.log(`Executing: ${command} in ${realCwd}`);
     exec(command, { cwd: realCwd }, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing: ${command}\n${stderr}`);
         reject(error);
       } else {
-        console.log(`Completed: ${command}`);
+        log && console.log(`Completed: ${command}`);
         resolve(stdout);
       }
     });
@@ -55,32 +60,138 @@ const runLimited = async (tasks, limit) => {
 
   return Promise.all(results);
 };
+/**
+ *
+ * @param {string} fullDmmPath
+ * @param {string} cwd
+ * @returns {}
+ */
+async function getZLevelCount(fullDmmPath, cwd) {
+  try {
+    const stdout = await execCommand(`${dmmTool} map-info "${fullDmmPath}"`, cwd, false);
+    const match = stdout.match(/"size":\[\d+,\d+,(\d+)\]/);
+    return match ? Number.parseInt(match[1], 10) : 1;
+  } catch (e) {
+    console.warn(`Failed to get Z-levels for ${fullDmmPath}`, e);
+    return 1;
+  }
+}
+/**
+ *
+ * @param {string} outDir
+ * @param {string} mapName
+ * @param {number} zLevels
+ * @returns {true | false | string[]}
+ */
+async function shouldRenderMap(outDir, mapName, zLevels) {
+  const missing = [];
 
+  for (let i = 0; i < zLevels; i++) {
+    const filePath = path.join(outDir, `${mapName}-${i}.png`);
+    try {
+      await fs.access(filePath);
+    } catch {
+      missing.push(filePath);
+    }
+  }
+
+  if (missing.length === 0) return true;
+  if (missing.length === zLevels) return false;
+  return missing;
+}
 /**
  *
  * @param {import('../src/typings/maps').MapConfig} webmapConfig
  */
 const processMaps = async (webmapConfig) => {
   const tasks = [];
+  const optipngParam = optipng ? " --optipng" : ""
+  const pngcrushParam = pngcrush ? " --pngcrush" : ""
 
+  const additionalParams = `${optipngParam}${pngcrushParam}`;
+
+  console.log("Processing and calculating map Z-levels")
   for (const category of webmapConfig.categories) {
-    const mapCollection = [...category.maps, ...category.subcategories.flatMap(e=>e.maps)]
-    for (const map of mapCollection) {
-      let fullDmmPath;
-      if (map.dmmPath.startsWith("/"))
-        fullDmmPath = map.dmmPath;
-      else fullDmmPath = path.join(category.gamePath, category.mapFilesPath, map.dmmPath);
+    for (const sub of category.subcategories ?? []) {
+      for (const map of sub.maps ?? []) {
+        const effectiveSupportsPipes =
+          map.supportsPipes ??
+          sub.supportsPipes ??
+          category.supportsPipes ??
+          true;
+        const effectiveRenderOnce =
+          map.renderOnce ?? sub.renderOnce ?? category.renderOnce ?? false;
 
-      const envFileParam = category.envFile ? ` -e ${path.join(category.gamePath, category.envFile)}` : "";
+        const fullDmmPath = map.dmmPath.startsWith("/")
+          ? map.dmmPath
+          : path.join(category.gamePath, category.mapFilesPath, map.dmmPath);
 
-      const command = `${dmmTool}${envFileParam} minimap ${fullDmmPath} -o ${path.join(process.cwd(), "maps", category.name, map.name)}`;
-      tasks.push(() => execCommand(command, category.gamePath));
+        const envFileParam = category.envFile
+          ? ` -e ${path.join(category.gamePath, category.envFile)}`
+          : "";
+        const outDir = path.join(
+          process.cwd(),
+          "maps",
+          category.name,
+          sub.name,
+          map.name,
+        );
+        const zLevels = getZLevelCount(fullDmmPath);
 
-      if (
-        map.supportsPipes === true || // map explicitly allows pipes
-        (map.supportsPipes === undefined && category.supportsPipes !== false) // map doesn't say, and category doesn't block
-      ) {
-        const pipeCommand = `${dmmTool}${envFileParam} minimap --enable only-wires-and-pipes ${fullDmmPath} -o ${path.join(process.cwd(), "maps", category.name, "pipes", map.name)}`;
+        const renderCheck = await shouldRenderMap(outDir, map.name, zLevels);
+
+        if (!effectiveRenderOnce || !!renderCheck) {
+          const command = `${dmmTool}${envFileParam} minimap "${fullDmmPath}" -o "${outDir}"${additionalParams}`;
+          tasks.push(() => execCommand(command, category.gamePath, true));
+        }
+
+        if (effectiveSupportsPipes) {
+          const pipeDir = path.join(
+            process.cwd(),
+            "maps",
+            category.name,
+            sub.name,
+            "pipes",
+            map.name,
+          );
+          const pipeCommand = `${dmmTool}${envFileParam} minimap --enable only-wires-and-pipes "${fullDmmPath}" -o "${pipeDir}"${additionalParams}`;
+          tasks.push(() => execCommand(pipeCommand, category.gamePath, true));
+        }
+      }
+    }
+
+    for (const map of category.maps ?? []) {
+      const effectiveSupportsPipes =
+        map.supportsPipes ?? category.supportsPipes ?? true;
+      const effectiveRenderOnce =
+        map.renderOnce ?? category.renderOnce ?? false;
+
+      const fullDmmPath = map.dmmPath.startsWith("/")
+        ? map.dmmPath
+        : path.join(category.gamePath, category.mapFilesPath, map.dmmPath);
+
+      const envFileParam = category.envFile
+        ? ` -e ${path.join(category.gamePath, category.envFile)}`
+        : "";
+      const outDir = path.join(process.cwd(), "maps", category.name, map.name);
+      const zLevels = getZLevelCount(fullDmmPath);
+
+      const renderCheck = await shouldRenderMap(outDir, map.name, zLevels);
+
+        if (!effectiveRenderOnce || !!renderCheck) {
+        const command = `${dmmTool}${envFileParam} minimap "${fullDmmPath}" -o "${outDir}"${additionalParams}`;
+        tasks.push(() => execCommand(command, category.gamePath));
+      }
+
+      if (effectiveSupportsPipes) {
+        const pipeDir = path.join(
+          process.cwd(),
+          "maps",
+          category.name,
+          "pipes",
+          map.name,
+        );
+        const pipeCommand = `${dmmTool}${envFileParam} minimap --enable only-wires-and-pipes "${fullDmmPath}" -o "${pipeDir}${additionalParams}"`;
         tasks.push(() => execCommand(pipeCommand, category.gamePath));
       }
     }
@@ -92,24 +203,31 @@ const processMaps = async (webmapConfig) => {
     console.error("Error during map processing:", error);
   }
 
-  // console.log("Copying minimaps to data/minimaps folder...");
-
-  // const copiedFolders = new Set();
-  // for (const category of webmapConfig.categories) {
-  //   const minimapPath = path.join(category.gamePath, "data", "minimaps");
-  //   const destPath = path.join(process.cwd(), "maps", category.name);
-  //   const categoryName = category.name;
-  //   if (copiedFolders.has(categoryName)) {
-  //     console.log(`Already copied minimaps for ${categoryName}, skipping...`);
-  //     continue;
-  //   }
-  //   copiedFolders.add(categoryName);
-  //   console.log(`Copying minimaps for ${categoryName}...`);
-  //   await fs.mkdir(destPath, { recursive: true });
-  //   await fs.cp(minimapPath, destPath, { recursive: true });
-  // }
   console.log("All maps processed successfully.");
 };
+
+async function detectOptiPNG() {
+  try {
+    await execCommand('optipng -v');
+    console.log('OptiPNG detected.');
+    return true;
+  } catch (error) {
+    console.log('OptiPNG not detected.');
+    return false;
+  }
+}
+
+async function detectPNGCrush() {
+  try {
+    await execCommand('pngcrush -version');
+    console.log('PngCrush detected.');
+    return true;
+  } catch (error) {
+    console.log('PngCrush not detected.');
+    return false;
+  }
+}
+
 
 const main = async () => {
   let dmmToolPath;
@@ -136,6 +254,9 @@ const main = async () => {
   dmmTool = dmmToolPath;
   console.log(`Using DMM Tool: ${dmmTool}`);
 
+  optipng = process.env.USE_OPTIPNG && detectOptiPNG();
+  pngcrush = process.env.USE_PNGCRUSH && detectPNGCrush();
+
   const mapConfigPath = path.join(process.cwd(), "config.json");
   const mapConfig = JSON.parse(await fs.readFile(mapConfigPath, "utf-8"));
   try {
@@ -144,6 +265,6 @@ const main = async () => {
   } catch (error) {
     console.error("Error during map generation:", error);
   }
-}
+};
 
 main();

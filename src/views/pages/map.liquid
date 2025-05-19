@@ -54,36 +54,45 @@
     <div id="layer3"></div>
     <div id="webmap"></div>
     <script type="text/javascript">
-          const bounds = [[0, 0], [-255, 255]];
-          const map_config = {
-      center: [-128, 128],
-      zoom: 4,
-      crs: L.CRS.Simple
-          };
+      const bounds = [[0, 0], [-255, 255]];
+      const map_config = {
+        center: [-128, 128],
+        zoom: 4,
+        crs: L.CRS.Simple
+      };
 
-          const image_config = {
-      map: [
-        {% for z in (1..map.zLevels) %}
-          { "z": {{ z }}, "url": "/maps/{{ category }}/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
-        {% endfor %}
-      ],
-      {% if map.supportsPipes %}
-      pipenet: [
-        {% for z in (1..map.zLevels) %}
-          { "z": {{ z }}, "url": "/maps/{{ category }}/pipes/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
-        {% endfor %}
-      ]
-      {% endif %}
-          };
+      const image_config = {
+        map: [
+          {% for z in (1..map.zLevels) %}
+            {% if subcategory %}
+              { "z": {{ z }}, "url": "/maps/{{ category }}/{{ subcategory }}/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
+                {% else %}
+              { "z": {{ z }}, "url": "/maps/{{ category }}/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
+                {% endif %}
+          {% endfor %}
+        ],
+        {% if map.supportsPipes %}
+        pipenet: [
+          {% for z in (1..map.zLevels) %}
+            {% if subcategory %}
+              { "z": {{ z }}, "url": "/maps/{{ category }}/{{ subcategory }}/pipes/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
+            {% else %}
+              { "z": {{ z }}, "url": "/maps/{{ category }}/pipes/{{ map.name }}/{{ map.name }}-{{ z }}.png" }{% if forloop.last == false %},{% endif %}
+            {% endif %}
 
-          var webmap = L.map('webmap', map_config);
-          webmap.fitBounds(bounds);
-          webmap.setMaxBounds(bounds);
-          webmap.attributionControl.setPrefix('SS13 WebMap by AffectedArc07');
+          {% endfor %}
+        ]
+        {% endif %}
+      };
 
-          var lazylayers = bakeLayers(image_config, webmap, bounds);
-          L.control.layers(lazylayers.mapOpt, lazylayers.pipenet).addTo(webmap);
-          attachListener(webmap, bounds);
+      var webmap = L.map('webmap', map_config);
+      webmap.fitBounds(bounds);
+      webmap.setMaxBounds(bounds);
+      webmap.attributionControl.setPrefix('SS13 WebMap by AffectedArc07');
+
+      var lazylayers = bakeLayers(image_config, webmap, bounds);
+      L.control.layers(lazylayers.mapOpt, lazylayers.pipenet).addTo(webmap);
+      attachListener(webmap, bounds);
     </script>
   </body>
 

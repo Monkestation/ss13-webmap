@@ -8,6 +8,15 @@ This project still relys on DMM-Tools from [SpacemanDMM](https://github.com/Spac
 
 [License](LICENSE.md)
 
-TODO:
+## Map Generation
+
+You can start map generation by running `pnpm run generatemaps` and you can pass the following environment variables:
+ - `TASK_LIMIT` : How many maps should be generating at once
+ - `USE_OPTIPNG` : Tell dmm-tools to use OptiPNG after processing is done (`apt install optipng`)
+ - `USE_PNGCRUSH` : Tell dmm-tools to use PNGCrush after processing is done (`apt install pngcrush`)
+
+Install both: `$ sudo apt install optipng pngcrush`
+
+## TODO:
 - [x] better generated map organization (right now it just dumps everything into one folder for each category some filenames could clash...)
 - [ ] Work on metadata for map previews on platforms like Discord

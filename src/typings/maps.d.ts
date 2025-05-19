@@ -3,14 +3,17 @@ export interface MapInfo {
   friendlyName: string;
   /** @description the path to the map, relative to the basePath of the category. Path can be absolute if it differs from the categorys basePath */
   dmmPath: string;
-  zLevels: number;
   supportsPipes?: boolean;
+  renderOnce?: boolean;
   doFTL?: boolean;
-
 }
 
 export interface MapSubCategory {
   name: string;
+  friendlyName: string;
+  renderOnce?: boolean;
+  supportsPipes?: boolean;
+  doFTL?: boolean;
   maps: MapInfo[];
 }
 
@@ -26,8 +29,9 @@ export interface MapCategory {
   /** @description basePath for maps in this category, relative to the gamePath, for ease of use */
   mapFilesPath: string;
   supportsPipes?: boolean;
+  renderOnce?: boolean;
   doFTL?: boolean;
-  maps: MapInfo[];
+  maps?: MapInfo[];
   subcategories?: MapSubCategory[];
 }
 
