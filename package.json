@@ -10,7 +10,8 @@
     "esbuild": "node scripts/esbuild.mjs",
     "esbuild:watch": "node scripts/esbuild.mjs --watch",
     "generateschema": "cross-env typescript-json-schema --esModuleInterop --ignoreErrors --excludePrivate tsconfig.json -o config.schema.json MapConfig",
-    "generatemaps": "cross-env node scripts/generateMaps.mjs"
+    "generatemaps:old": "cross-env node scripts/generateMaps.mjs",
+    "generatemaps": "webmapgen"
   },
   "keywords": [],
   "author": "",
