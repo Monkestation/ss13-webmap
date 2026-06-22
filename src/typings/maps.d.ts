@@ -39,5 +39,6 @@ export interface MapConfig {
   $schema: string;
   /** @description the domain name that this will be hosted on, do not include trailing slash */
   baseUrl: string;
+  title: string;
   categories: MapCategory[];
 }

@@ -3,7 +3,7 @@
 
   <head>
 
-    <title>Monkestation Webmap</title>
+    <title>{{ title | default: "Webmap" }}</title>
     <link
       rel="shortcut icon"
       href="favicon.ico"
@@ -17,7 +17,7 @@
     <meta name="author" content="AffectedArc07,Flleeppyy" />
 
       <!-- OpenGraph Metadata -->
-    <meta property="og:title" content="Monkestation Webmap" />
+    <meta property="og:title" content="{{ title | default: "Webmap" }}" />
     <meta property="og:description" content="SS13 Web based map viewer built by AffectedArc07 & Flleeppyy." />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="{{ url }}" />
@@ -25,7 +25,7 @@
 
       <!-- Twitter Card -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="Monkestation Webmap">
+    <meta name="twitter:title" content="{{ title | default: "Webmap" }}">
     <meta name="twitter:description" content="SS13 Web based map viewer built by AffectedArc07 & Flleeppyy.">
     <meta name="twitter:image" content="/img/webmap-logo.jpg">
 
@@ -37,6 +37,7 @@
     <link rel="stylesheet" href="/css/main.min.css">
     <link rel="stylesheet" href="/css/materialize.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+    <link rel="stylesheet" href="/css/custom.css">
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-2.2.4.min.js" crossorigin="anonymous"></script>
@@ -61,7 +62,7 @@
     <div id="layer2"></div>
     <div id="layer3"></div>
     <div class="container center">
-      <h1 class="white-text">{{ title | default: "Monkestation Webmap" }}</h1>
+      <h1 class="white-text">{{ title | default: "Webmap" }}</h1>
       <p class="white-text">
         <b>Created by AffectedArc07</b>
       </p>

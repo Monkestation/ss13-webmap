@@ -41,6 +41,7 @@ app.register(pointOfView, {
 app.get("/", async (request, reply) => {
   return reply.view("index.liquid", {
     url: `${config.baseUrl}/${request.url}`,
+    title: config.title,
     categories: config.categories.map((cat) => ({
       name: cat.name,
       friendlyName: cat.friendlyName,
@@ -65,22 +66,24 @@ app.get("/", async (request, reply) => {
 });
 
 // Route: /maps/:category/:subcategory/:map
-app.get('/maps/:category/:subcategory/:map(^[^.]+$)', async (request, reply) => {
+app.get("/maps/:category/:subcategory/:map(^[^.]+$)", async (request, reply) => {
   return handleMapRequest(request, reply, true);
 });
 
 // Route: /maps/:category/:map
-app.get('/maps/:category/:map(^[^.]+$)', async (request, reply) => {
+app.get("/maps/:category/:map(^[^.]+$)", async (request, reply) => {
   return handleMapRequest(request, reply, false);
 });
 
 // Shared handler
 async function handleMapRequest(_request: FastifyRequest, reply: FastifyReply, hasSubcategory: boolean) {
-  const request = _request as FastifyRequest<{Params: {
-    category: string;
-    subcategory?: string;
-    map: string;
-  }}>;
+  const request = _request as FastifyRequest<{
+    Params: {
+      category: string;
+      subcategory?: string;
+      map: string;
+    };
+  }>;
   const { category: rCategory, map: rMap } = request.params;
 
   const rSubcategory = hasSubcategory ? request.params.subcategory : undefined;
@@ -127,20 +130,21 @@ async function handleMapRequest(_request: FastifyRequest, reply: FastifyReply, h
   if (!mapConfig) {
     return reply.status(404).view("pages/error.liquid", {
       errorCode: 404,
-      message: `Map ${rMap} not found in ${rSubcategory ? `subcategory ${rSubcategory} of ` : ''}category ${rCategory}`,
+      message: `Map ${rMap} not found in ${rSubcategory ? `subcategory ${rSubcategory} of ` : ""}category ${rCategory}`,
     });
   }
-
 
   return reply.view("pages/map.liquid", {
     url: `${config.baseUrl}/${request.url}`,
     category: rCategory,
     subcategory: subcategoryConfig?.name ?? null,
+    title: config.title,
     map: {
       name: mapConfig.name,
       friendlyName: mapConfig.friendlyName,
-      supportsPipes: mapConfig.supportsPipes ?? subcategoryConfig?.supportsPipes ?? categoryConfig.supportsPipes !== false,
-      doFTL: mapConfig.doFTL ?? subcategoryConfig?.doFTL ?? categoryConfig.doFTL !== false
+      supportsPipes:
+        mapConfig.supportsPipes ?? subcategoryConfig?.supportsPipes ?? categoryConfig.supportsPipes !== false,
+      doFTL: mapConfig.doFTL ?? subcategoryConfig?.doFTL ?? categoryConfig.doFTL !== false,
     },
   });
 }
